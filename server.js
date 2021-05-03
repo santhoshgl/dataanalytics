@@ -19,7 +19,10 @@ app.use(BodyParser.json());
 app.use(BodyParser.urlencoded({ extended: true }));
 var database, collection;
 
-app.listen(5000, () => {
+var port = process.env.PORT || 5000;
+
+app.listen(port, () => {
+    console.log('Our app is running on http://localhost:' + port);
     MongoClient.connect(CONNECTION_URL, { useNewUrlParser: true }, (error, client) => {
         if (error) {
             throw error;
