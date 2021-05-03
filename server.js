@@ -1,20 +1,26 @@
 const Express = require("express");
 const BodyParser = require("body-parser");
 const MongoClient = require("mongodb").MongoClient;
+const cors = require('cors')
+
+require('dotenv').config()
+
 const ObjectId = require("mongodb").ObjectID;
-const CONNECTION_URL = "mongodb+srv://root:WbnB4xCiZngtradP@cluster0.sib0u.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const password = process.env.PASSWORD
+const CONNECTION_URL = 'mongodb+srv://root:' + password + '@cluster0.sib0u.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
 const DATABASE_NAME = "accounting_department";
 
-// const MongoClient = require('mongodb').MongoClient;
-// const uri = "mongodb+srv://root:<password>@cluster0.sib0u.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
-// const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-// client.connect(err => {
-//     const collection = client.db("test").collection("devices");
-//     // perform actions on the collection object
-//     client.close();
-// });
-
 var app = Express();
+app.use(cors())
+
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", '*');
+    res.header("Access-Control-Allow-Credentials", true);
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header("Access-Control-Allow-Headers", 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json');
+    next();
+});
+
 app.use(BodyParser.json());
 app.use(BodyParser.urlencoded({ extended: true }));
 var database, collection;
@@ -42,20 +48,3 @@ app.post("/personnel", (request, response) => {
     });
 });
 
-app.get("/personnel", (request, response) => {
-    collection.find({}).toArray((error, result) => {
-        if (error) {
-            return response.status(500).send(error);
-        }
-        response.send(result);
-    });
-});
-
-app.get("/personnel/:id", (request, response) => {
-    collection.findOne({ "_id": new ObjectId(request.params.id) }, (error, result) => {
-        if (error) {
-            return response.status(500).send(error);
-        }
-        response.send(result);
-    });
-});
